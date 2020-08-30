@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import socket
-import sys
+import sys, os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -168,6 +168,44 @@ def convert(text):
 if __name__ == "__main__":
     new_text = ""
     text = ""
+    if "-s" in sys.argv:
+        load_nets(nets, './nets_only')
+        
+        s = socket.socket()
+        host = socket.gethostname()
+        port = 8082
+        try:
+            s.bind((host, port))
+        except OSError:
+            print("daeomon already running or " + host + ":" + str(port) + " is already in use")
+            sys.exit()
+        s.listen(1)
+        while True:
+            c, _ = s.accept()
+            data = str(c.recv(2048).decode())
+            if data == "exit\n":
+                c.close()
+                s.close()
+                sys.exit()
+            else:
+                c.send(convert(data).encode())
+                c.close()
+        sys.exit()
+    if "-D" in sys.argv:
+        os.system("nohup python cyr.py -s &")
+        sys.exit()
+    if "-K" in sys.argv:
+        host = socket.gethostname()
+        port = 8082
+        client = socket.socket()
+        try: 
+            client.connect((host,port))
+        except ConnectionRefusedError:
+            print('make sure cyr.daemon is running')
+            sys.exit()
+        client.send("exit\n".encode())
+        client.close()
+        sys.exit()
     if "-h" in sys.argv:
         print(
 """cyr [-d] [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
