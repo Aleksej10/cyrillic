@@ -114,7 +114,10 @@ def getOuts(nets, ins):
     outs = {}
     with torch.no_grad():
         for i in nets.keys():
-            outs[i] = nets[i](ins[i])
+            try: 
+                outs[i] = nets[i](ins[i])
+            except RuntimeError:
+                pass
     return outs
 
 def warn(xs):
