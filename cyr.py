@@ -165,20 +165,17 @@ if __name__ == "__main__":
     text = ""
     if "-h" in sys.argv:
         print(
-"""cir [option]...[file]
-
+"""cyr [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
 -f FILE
-    specify file to read
--o FILE 
-    specify output file
-    if this option is permitted it uses standard output
+    specify file to read. reads from standard input by default.
+-h 
+    display this help and exit
 -i
     edit file in place
 -n PATH
-    path to nets
-    if this option is permitted it looks for the nets in current directory
--h 
-    display this help and exit""")
+    path to nets. looks for the nets in current dir by default.
+-o FILE 
+    specify output file. writes to standard output by default.""")
         sys.exit()
     if "-f" in sys.argv:
         try:

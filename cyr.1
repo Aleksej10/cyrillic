@@ -1,0 +1,45 @@
+.TH CYR 1 cyr\-VERSION
+
+.SH NAME
+cyr \- converts plain ASCII to UTF-8 cyrillic 
+
+.SH SYNOPSIS
+.B cyr
+.RB [ \-f 
+.IR FILE ]
+.RB [ \-h ]
+.RB [ \-i ]
+.RB [ \-n
+.IR PATH ]
+.RB [ \-o
+.IR FILE ]
+
+.SH DESCRIPTION
+.B cyr
+converts text written in plain ACII to unicode cyrillic using nural nets for converting ambiguous characters like 's', 'z' and 'c'.
+.B DISCLAIMER:
+.PP
+It is not 100% precise!
+
+.SH OPTIONS
+.TP
+.BI \-f " FILE"
+specify file to read. reads from standard input by default.
+.TP 
+.B \-h
+display this help and exit.
+.TP
+.B \-i
+edit file in place.
+.TP
+.BI \-n " PATH"
+path to nets. looks for the nets in current dir by default.
+.TP
+.BI \-o " FILE"
+specify output file. writes to standard output by default.
+
+.SH AUTHORS
+See the LICENSE file for the authors.
+
+.SH LICENSE
+See the LICENSE file for the terms of redistribution.
