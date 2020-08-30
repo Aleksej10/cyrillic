@@ -1,10 +1,12 @@
 # synopsis
-    cyr [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
+    cyr [-d] [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
 
 # description
     converts plain ascii text to unicode cyrillic.
 
 # options
+    -d 
+        use running daemon for conversion
     -f FILE
         specify file to read. reads from standard input by default.
     -h 

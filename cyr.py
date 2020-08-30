@@ -168,7 +168,9 @@ if __name__ == "__main__":
     text = ""
     if "-h" in sys.argv:
         print(
-"""cyr [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
+"""cyr [-d] [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
+-d
+    use running daemon for conversion
 -f FILE
     specify file to read. reads from standard input by default.
 -h 
