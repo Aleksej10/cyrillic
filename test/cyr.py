@@ -199,7 +199,7 @@ if __name__ == "__main__":
             text += line
     if "-d" in sys.argv:
         host = socket.gethostname()
-        port = 8081
+        port = 8082
         client = socket.socket()
         try: 
             client.connect((host,port))

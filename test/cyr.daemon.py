@@ -153,7 +153,10 @@ def rev(caps, huks, preds, orig):
         else:
             if caps[c]:
                 orig[i] = t.upper()
-            orig[i] = drev[orig[i]]
+            try:
+                orig[i] = drev[orig[i]]
+            except KeyError:
+                print(orig[i] + " can't be converted to cyrillic.");
             c += 1
             i += 1
     return "".join(orig)
@@ -170,14 +173,23 @@ if __name__ == "__main__":
     
     s = socket.socket()
     host = socket.gethostname()
-    port = 8081
-    s.bind((host, port))
+    port = 8082
+    try:
+        s.bind((host, port))
+    except OSError:
+        print("daeomon already running or " + host + ":" + str(port) + " is already in use")
+        sys.exit()
     s.listen(1)
     while True:
         c, addr = s.accept()
-        data = c.recv(2048).decode()
-        c.send(convert(str(data)).encode())
-        c.close()
+        data = str(c.recv(2048).decode())
+        if data == "exit\n":
+            c.close()
+            s.close()
+            sys.exit()
+        else:
+            c.send(convert(data).encode())
+            c.close()
 
         
 
