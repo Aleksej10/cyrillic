@@ -1,10 +1,10 @@
-#synopsis
+# synopsis
     cyr [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
 
-#description
+# description
     converts plain ascii text to unicode cyrillic.
 
-#options
+# options
     -f FILE
         specify file to read. reads from standard input by default.
     -h 
