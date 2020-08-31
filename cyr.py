@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 import socket
 import sys, os
@@ -171,7 +172,7 @@ def convert(text):
 if __name__ == "__main__":
     new_text = ""
     text = ""
-    nets_path = "$HOME/.cyr_nets"
+    nets_path = os.path.expanduser("~") + "/.cyr_nets"
     file_name = ""
     if "-n" in sys.argv:
         if "-d" not in sys.argv:
@@ -268,7 +269,9 @@ if __name__ == "__main__":
         try:
             load_nets(nets, nets_path)
         except Exception as e:
-            print('Error loading nets.')
+            # print('Error loading nets.')
+            print(e)
+            sys.exit()
         new_text = convert(text)
     if "-o" in sys.argv:
         try:
