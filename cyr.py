@@ -224,7 +224,7 @@ if __name__ == "__main__":
 -d 
     use daemon instead of loading nets.
 -D 
-    start daemon. TODO: pass args
+    start daemon. 
 -f FILE
     specify file to read. reads from standard input by default.
 -h 
