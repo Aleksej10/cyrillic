@@ -20,8 +20,8 @@ cyr \- converts plain ASCII to UTF-8 cyrillic
 .SH DESCRIPTION
 .B cyr
 converts text written in plain ACII to unicode cyrillic using nural nets for converting ambiguous characters like 's', 'z' and 'c'.
-.B DISCLAIMER:
 .PP
+.B DISCLAIMER:
 It is not 100% precise!
 
 .SH OPTIONS
@@ -45,7 +45,7 @@ edit file in place.
 kill daemon.
 .TP
 .BI \-n " PATH"
-path to nets. looks for the nets in current dir by default.
+path to nets. default is $HOME/.cyr_nets.
 .TP
 .BI \-o " FILE"
 specify output file. writes to standard output by default.

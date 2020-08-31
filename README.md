@@ -17,6 +17,6 @@
     -K 
         kill daemon.
     -n PATH
-        path to nets. looks for the nets in current dir by default.
+        path to nets. default is $HOME/.cyr_nets.
     -o FILE 
         specify output file. writes to standard output by default.

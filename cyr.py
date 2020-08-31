@@ -171,7 +171,7 @@ def convert(text):
 if __name__ == "__main__":
     new_text = ""
     text = ""
-    nets_path = "./nets_only"
+    nets_path = "$HOME/.cyr_nets"
     file_name = ""
     if "-n" in sys.argv:
         if "-d" not in sys.argv:
@@ -234,7 +234,7 @@ if __name__ == "__main__":
 -K 
     kill daemon.
 -n PATH
-    path to nets. looks for the nets in current dir by default.
+    path to nets. default is $HOME/.cyr_nets.
 -o FILE 
     specify output file. writes to standard output by default.""")
         sys.exit()
