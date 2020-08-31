@@ -6,10 +6,12 @@ cyr \- converts plain ASCII to UTF-8 cyrillic
 .SH SYNOPSIS
 .B cyr
 .RB [ \-d ]
+.RB [ \-D ]
 .RB [ \-f 
 .IR FILE ]
 .RB [ \-h ]
 .RB [ \-i ]
+.RB [ \-K ]
 .RB [ \-n
 .IR PATH ]
 .RB [ \-o
@@ -25,7 +27,10 @@ It is not 100% precise!
 .SH OPTIONS
 .TP
 .B \-d
-use running daemon for conversion
+use running daemon for conversion.
+.TP
+.B \-D
+start daemon.
 .TP
 .BI \-f " FILE"
 specify file to read. reads from standard input by default.
@@ -35,6 +40,9 @@ display this help and exit.
 .TP
 .B \-i
 edit file in place.
+.TP
+.B \-K
+kill daemon.
 .TP
 .BI \-n " PATH"
 path to nets. looks for the nets in current dir by default.

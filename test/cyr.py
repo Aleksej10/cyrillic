@@ -192,7 +192,7 @@ if __name__ == "__main__":
                 c.close()
         sys.exit()
     if "-D" in sys.argv:
-        os.system("nohup python cyr.py -s &")
+        os.system("nohup python cyr.py -s &> /dev/null &")
         sys.exit()
     if "-K" in sys.argv:
         host = socket.gethostname()

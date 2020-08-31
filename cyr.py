@@ -165,6 +165,9 @@ def convert(text):
     preds, _ = percentage_prediction(outs)
     return rev(caps, huks, preds, orig)
 
+
+
+
 if __name__ == "__main__":
     new_text = ""
     text = ""
@@ -192,7 +195,7 @@ if __name__ == "__main__":
                 c.close()
         sys.exit()
     if "-D" in sys.argv:
-        os.system("nohup python cyr.py -s &")
+        os.system("nohup python cyr.py -s &> /dev/null &")
         sys.exit()
     if "-K" in sys.argv:
         host = socket.gethostname()
@@ -208,15 +211,19 @@ if __name__ == "__main__":
         sys.exit()
     if "-h" in sys.argv:
         print(
-"""cyr [-d] [-f FILE] [-h] [-i] [-n PATH] [-o FILE]
+"""cyr [-d] [-D] [-f FILE] [-h] [-i] [-K] [-n PATH] [-o FILE]
 -d 
-    use daemon instead of loading nets
+    use daemon instead of loading nets.
+-D 
+    start daemon. TODO: pass args
 -f FILE
     specify file to read. reads from standard input by default.
 -h 
-    display this help and exit
+    display this help and exit.
 -i
-    edit file in place
+    edit file in place.
+-K 
+    kill daemon.
 -n PATH
     path to nets. looks for the nets in current dir by default.
 -o FILE 
