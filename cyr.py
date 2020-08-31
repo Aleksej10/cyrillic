@@ -171,22 +171,31 @@ def convert(text):
 if __name__ == "__main__":
     new_text = ""
     text = ""
+    nets_path = "./nets_only"
+    file_name = ""
+    if "-n" in sys.argv:
+        if "-d" not in sys.argv:
+            nets_path = sys.argv[sys.argv.index("-n")+1] 
     if "-s" in sys.argv:
-        load_nets(nets, './nets_only')
+        try: 
+            load_nets(nets, nets_path)
+        except Exception as e:
+            print("Nets not found at "+nets_path + ".")
+            sys.exit()
         
         s = socket.socket()
         host = socket.gethostname()
         port = 8082
         try:
             s.bind((host, port))
-        except OSError:
-            print("daeomon already running or " + host + ":" + str(port) + " is already in use")
+        except Exception as e:
+            print("Daeomon already running or " + host + ":" + str(port) + " is already in use")
             sys.exit()
         s.listen(1)
         while True:
             c, _ = s.accept()
             data = str(c.recv(2048).decode())
-            if data == "exit\n":
+            if data == "exit":
                 c.close()
                 s.close()
                 sys.exit()
@@ -195,7 +204,7 @@ if __name__ == "__main__":
                 c.close()
         sys.exit()
     if "-D" in sys.argv:
-        os.system("nohup python cyr.py -s &> /dev/null &")
+        os.system("nohup python cyr.py -s -n " + nets_path + " &> /dev/null &")
         sys.exit()
     if "-K" in sys.argv:
         host = socket.gethostname()
@@ -203,10 +212,10 @@ if __name__ == "__main__":
         client = socket.socket()
         try: 
             client.connect((host,port))
-        except ConnectionRefusedError:
-            print('make sure cyr.daemon is running')
+        except Exception as e:
+            print('Make sure cyr daemon is running.')
             sys.exit()
-        client.send("exit\n".encode())
+        client.send("exit".encode())
         client.close()
         sys.exit()
     if "-h" in sys.argv:
@@ -230,14 +239,15 @@ if __name__ == "__main__":
     specify output file. writes to standard output by default.""")
         sys.exit()
     if "-f" in sys.argv:
+        file_name = sys.argv[sys.argv.index("-f")+1]
         try:
-            with open(sys.argv[sys.argv.index("-f")+1], "r") as f:
+            with open(file_name, "r") as f:
                 text = f.read()
         except FileNotFoundError:
-            print("File not found")
+            print("File not found.")
             sys.exit()
         except IndexError:
-            print("No file given, run with -h option for help")
+            print("No file given, run with -h option for help.")
             sys.exit()
     else:
         for line in sys.stdin:
@@ -248,33 +258,37 @@ if __name__ == "__main__":
         client = socket.socket()
         try: 
             client.connect((host,port))
-        except ConnectionRefusedError:
-            print('make sure cyr.daemon is running')
+        except Exception as e:
+            print('Make sure cyr daemon is running.')
             sys.exit()
         client.send(text.encode())
         new_text = client.recv(2048).decode()
         client.close()
     else:
-        if "-n" in sys.argv:
-            try:
-                load_nets(nets, sys.argv[sys.argv.index("-n")+1])
-            except Exception as e:
-                print('Error loading nets')
-                print(e)
-        else:
-            try:
-                load_nets(nets, './nets_only')
-            except Exception as e:
-                print('Error loading nets')
-                print(e)
+        try:
+            load_nets(nets, nets_path)
+        except Exception as e:
+            print('Error loading nets.')
         new_text = convert(text)
     if "-o" in sys.argv:
         try:
             with open(sys.argv[sys.argv.index("-o")+1], "w") as f:
                 f.write(new_text)
-        except IndexError:
-            print("No file given, run with -h option for help")
+        except Exception as e:
+            print("No file given, run with -h option for help.")
             sys.exit()
+    elif "-i" in sys.argv:
+        if file_name == "":
+            print("You must specify file with -f option.")
+            sys.exit()
+        else:
+            try:
+                with open(file_name, "w") as f:
+                    f.write(new_text)
+            except Exception as e:
+                print("Error writting file.")
+                sys.exit()
+
     else:
         print(new_text)
 
