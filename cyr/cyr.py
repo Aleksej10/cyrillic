@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 import socket
 import sys, os
@@ -159,6 +158,7 @@ def rev(caps, huks, preds, orig):
             i += 1
     return "".join(orig)
             
+
 def convert(text):
     caps, huks, news, orig = textToList(text)
     ins = huks_n_newsToData(huks, news)
@@ -166,10 +166,7 @@ def convert(text):
     preds, _ = percentage_prediction(outs)
     return rev(caps, huks, preds, orig)
 
-
-
-
-if __name__ == "__main__":
+def main():
     new_text = ""
     text = ""
     nets_path = os.path.expanduser("~") + "/.cyr_nets"
@@ -205,7 +202,7 @@ if __name__ == "__main__":
                 c.close()
         sys.exit()
     if "-D" in sys.argv:
-        os.system("nohup python cyr.py -s -n " + nets_path + " &> /dev/null &")
+        os.system("nohup cyr -s -n " + nets_path + " &> /dev/null &")
         sys.exit()
     if "-K" in sys.argv:
         host = socket.gethostname()
@@ -269,8 +266,7 @@ if __name__ == "__main__":
         try:
             load_nets(nets, nets_path)
         except Exception as e:
-            # print('Error loading nets.')
-            print(e)
+            print('Error loading nets.')
             sys.exit()
         new_text = convert(text)
     if "-o" in sys.argv:
@@ -299,3 +295,5 @@ if __name__ == "__main__":
 
         
 
+if __name__ == "__main__":
+    main()
