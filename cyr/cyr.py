@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import socket
+import struct
 import sys, os
 import torch
 import torch.nn as nn
@@ -120,9 +121,9 @@ def getOuts(nets, ins):
                 pass
     return outs
 
-def warn(xs):
-    ys = sorted(xs, reverse=True)
-    return 1 < (ys[0] - ys[1])
+# def warn(xs):
+#     ys = sorted(xs, reverse=True)
+#     return 1 < (ys[0] - ys[1])
 
 def percentage_prediction(outs):
     preds = {}
@@ -165,59 +166,105 @@ def convert(text):
     preds, _ = percentage_prediction(outs)
     return rev(caps, huks, preds, orig)
 
-def main():
-    new_text = ""
-    text = ""
-    nets_path = os.path.expanduser("~") + "/.cyr_nets"
-    file_name = ""
-    if "-n" in sys.argv:
-        if "-d" not in sys.argv:
-            nets_path = sys.argv[sys.argv.index("-n")+1] 
-    if "-s" in sys.argv:
-        try: 
-            load_nets(nets, nets_path)
-        except Exception as e:
-            print("Nets not found at "+nets_path + ".")
-            sys.exit()
-        
-        s = socket.socket()
-        host = socket.gethostname()
-        port = 8082
-        try:
-            s.bind((host, port))
-        except Exception as e:
-            print("Daeomon already running or " + host + ":" + str(port) + " is already in use")
-            sys.exit()
-        s.listen(1)
-        while True:
-            c, _ = s.accept()
-            data = str(c.recv(2048).decode())
-            if data == "exit":
-                c.close()
-                s.close()
-                sys.exit()
-            else:
-                c.send(convert(data).encode())
-                c.close()
+def send_msg(sock, msg):
+    msg = msg.encode()
+    msg = struct.pack('>I', len(msg)) + msg
+    sock.send(msg)
+
+def recv_msg(sock):
+    raw_msglen = recvall(sock, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    return recvall(sock, msglen).decode()
+
+def recvall(sock, n):
+    data = bytearray()
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data.extend(packet)
+    return data
+
+def kill_daemon():
+    client = socket.socket()
+    try: 
+        client.connect((socket.gethostname(),8082))
+    except Exception as _:
+        print('Cyr daemon is not running.')
         sys.exit()
-    if "-D" in sys.argv:
-        os.system("nohup cyr -s -n " + nets_path + " &> /dev/null &")
+    send_msg(client, "exit")
+    client.close()
+    sys.exit()
+
+def check_daemon():
+    client = socket.socket()
+    try: 
+        client.connect((socket.gethostname(),8082))
+    except Exception as _:
+        print('Cyr daemon is not running.')
         sys.exit()
-    if "-K" in sys.argv:
-        host = socket.gethostname()
-        port = 8082
-        client = socket.socket()
-        try: 
-            client.connect((host,port))
-        except Exception as e:
-            print('Make sure cyr daemon is running.')
+    send_msg(client, "check")
+    data = recv_msg(client)
+    if data == None:
+        print("Unexpected message, daemon might still be running.")
+        sys.exit()
+    if data == "ok":
+        print("Cyr daemon is running.")
+    else:
+        print("Cyr is running, but is possibly corrupted.")
+    client.close()
+    sys.exit()
+
+def set_nets_path(nets_path):
+    if "-d" in sys.argv:
+        print("Nets are already loaded into daemon.")
+        return nets_path
+    return sys.argv[sys.argv.index("-n")+1] 
+
+def daemon(nets_path):
+    try: 
+        load_nets(nets, nets_path)
+    except Exception as _:
+        print("Nets not found at "+nets_path + ".")
+        sys.exit()
+    server = socket.socket()
+    try:
+        server.bind((socket.gethostname(), 8082))
+    except Exception as _:
+        print("Daeomon already running or " + socket.gethostname() + ":8082 is already in use")
+        sys.exit()
+    server.listen(1)
+    while True:
+        client, _ = server.accept()
+        data = recv_msg(client)
+        if data == None:
+            print("Unexpected EOF while converting.")
             sys.exit()
-        client.send("exit".encode())
-        client.close()
-        sys.exit()
-    if "-h" in sys.argv:
-        print(
-"""cyr [-d] [-D] [-f FILE] [-h] [-i] [-K] [-n PATH] [-o FILE]
+        if data == "exit":
+            client.close()
+            server.close()
+            sys.exit()
+        if data == "check":
+            send_msg(client, "ok")
+        else:
+            send_msg(client, convert(data))
+            client.close()
+    server.close()
+    sys.exit()
+
+def start_daemon(nets_path):
+    nohup_log = os.path.expanduser("~") + "/.cyr_nohup"
+    if os.system("nohup cyr -s -n " + nets_path + " &> " + nohup_log + " &") != 0:
+        print("Error starting daemon.")
+    sys.exit()
+
+def print_help():
+    print(
+"""cyr [-c] [-d] [-D] [-f FILE] [-h] [-i] [-K] [-n PATH] [-o FILE]
+-c
+    check daemon state.
 -d 
     use daemon instead of loading nets.
 -D 
@@ -234,63 +281,101 @@ def main():
     path to nets. default is $HOME/.cyr_nets.
 -o FILE 
     specify output file. writes to standard output by default.""")
-        sys.exit()
-    if "-f" in sys.argv:
-        file_name = sys.argv[sys.argv.index("-f")+1]
-        try:
-            with open(file_name, "r") as f:
-                text = f.read()
-        except FileNotFoundError:
-            print("File not found.")
-            sys.exit()
-        except IndexError:
-            print("No file given, run with -h option for help.")
-            sys.exit()
-    else:
-        for line in sys.stdin:
-            text += line
-    if "-d" in sys.argv:
-        host = socket.gethostname()
-        port = 8082
-        client = socket.socket()
-        try: 
-            client.connect((host,port))
-        except Exception as e:
-            print('Make sure cyr daemon is running.')
-            sys.exit()
-        client.send(text.encode())
-        new_text = client.recv(2048).decode()
-        client.close()
-    else:
-        try:
-            load_nets(nets, nets_path)
-        except Exception as e:
-            print('Error loading nets.')
-            sys.exit()
-        new_text = convert(text)
-    if "-o" in sys.argv:
-        try:
-            with open(sys.argv[sys.argv.index("-o")+1], "w") as f:
-                f.write(new_text)
-        except Exception as e:
-            print("No file given, run with -h option for help.")
-            sys.exit()
-    elif "-i" in sys.argv:
-        if file_name == "":
-            print("You must specify file with -f option.")
-            sys.exit()
-        else:
-            try:
-                with open(file_name, "w") as f:
-                    f.write(new_text)
-            except Exception as e:
-                print("Error writting file.")
-                sys.exit()
+    sys.exit()
 
+def read_file(file_name, text):
+    file_name = sys.argv[sys.argv.index("-f")+1]
+    try:
+        with open(file_name, "r") as f:
+            text = f.read()
+    except FileNotFoundError:
+        print("File " + file_name + " not found.")
+        sys.exit()
+    except IndexError:
+        print("No file given, run with -h option for help.")
+        sys.exit()
+    return file_name, text
+
+def read_stdin(text):
+    for line in sys.stdin:
+        text += line
+    return text
+
+def pass_to_daemon(text):
+    client = socket.socket()
+    try: 
+        client.connect((socket.gethostname(),8082))
+    except Exception as _:
+        print('Make sure cyr daemon is running.')
+        sys.exit()
+    send_msg(client, text)
+    data = recv_msg(client)
+    if data == None:
+        print("Unexpected message from daemon.")
+        sys.exit()
+    client.close()
+    return data
+
+def standalone(text, nets_path):
+    try:
+        load_nets(nets, nets_path)
+    except Exception as _:
+        print('Error loading nets.')
+        sys.exit()
+    return convert(text)
+
+def write_to_file(new_text):
+    try:
+        with open(sys.argv[sys.argv.index("-o")+1], "w") as f:
+            f.write(new_text)
+    except Exception as _:
+        print("Error writting file.")
+        sys.exit()
+
+def write_in_place(new_text, file_name):
+    if file_name == "":
+        print("You must specify file with -f option.")
+        sys.exit()
+    else:
+        try:
+            with open(file_name, "w") as f:
+                f.write(new_text)
+        except Exception as _:
+            print("Error writting file.")
+            sys.exit()
+
+def main():
+    new_text = ""
+    text = ""
+    nets_path = os.path.expanduser("~") + "/.cyr_nets"
+    file_name = ""
+
+    if "-K" in sys.argv:
+        kill_daemon()
+    if "-c" in sys.argv:
+        check_daemon()
+    if "-n" in sys.argv:
+        nets_path = set_nets_path(nets_path) 
+    if "-s" in sys.argv:
+        daemon(nets_path)
+    if "-D" in sys.argv:
+        start_daemon(nets_path)
+    if "-h" in sys.argv:
+        print_help()
+    if "-f" in sys.argv:
+        file_name, text = read_file(file_name, text)
+    else:
+        text = read_stdin(text)
+    if "-d" in sys.argv:
+        new_text = pass_to_daemon(text)
+    else:
+        new_text = standalone(text, nets_path)
+    if "-o" in sys.argv:
+        write_to_file(new_text)
+    elif "-i" in sys.argv:
+        write_in_place(new_text, file_name)
     else:
         print(new_text)
-
-
 
         
 
