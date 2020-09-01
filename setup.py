@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cyr-10", 
-    version="0.0.2",
+    version="0.0.3",
     author="Aleksej",
     author_email="mr.strale@gmain.com",
     description="smart ascii to unicode cyrillic converter",
@@ -20,6 +20,10 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     python_requires='>=3.6',
+    install_requires=[
+        "numpy",
+        "torch",
+    ],
     data_files=[
         ("share/man/man1", [
             "doc/cyr.1",

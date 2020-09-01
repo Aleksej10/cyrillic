@@ -33,7 +33,6 @@ class Net(nn.Module):
         out = self.fc3(out)
         return out
 
-
 drev = {'A': 'А', 'B': 'Б', 'V': 'В', 'G': 'Г', 'D': 'Д', 'Dj': 'Ђ', 'DJ': 'Ђ', 'E': 'Е', 'I': 'И', 'J': 'Ј', 'K': 'К', 'L': 'Л', 'Lj': 'Љ', 'LJ': 'Љ', 'M': 'М', 'N': 'Н', 'Nj': 'Њ', 'NJ': 'Њ', 'O': 'О', 'P': 'П', 'R': 'Р', 'T': 'Т', 'U': 'У', 'F': 'Ф', 'H': 'Х', 'Dz': 'Џ', 'DZ': 'Џ', 'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г', 'd': 'д', 'dj': 'ђ', 'e': 'е', 'i': 'и', 'j': 'ј', 'k': 'к', 'l': 'л', 'lj': 'љ', 'm': 'м', 'n': 'н', 'nj': 'њ', 'o': 'о', 'p': 'п', 'r': 'р', 't': 'т', 'u': 'у', 'f': 'ф', 'h': 'х', 'dz': 'џ'}
 asci = [' ','a','b','v','g','d','dj','e','z','i','j','k','l','lj','m','n','nj','o','p','r','s','t','c','u','f','h','dz']
 asci_len = len(asci)
@@ -127,11 +126,11 @@ def warn(xs):
 
 def percentage_prediction(outs):
     preds = {}
-    percs = {}
+    # percs = {}
     for i in outs.keys():
         preds[i] = np.apply_along_axis(np.argmax, 1, outs[i])
-        percs[i] = np.apply_along_axis(warn, 1, outs[i])
-    return preds, percs
+        # percs[i] = np.apply_along_axis(warn, 1, outs[i])
+    return preds, None #percs
 
 def rev(caps, huks, preds, orig):
     l = len(orig)
