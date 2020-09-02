@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="cyr-10", 
+    name="cyr", 
     version="0.0.1",
     author="Aleksej",
     author_email="mr.strale@gmain.com",
