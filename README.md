@@ -19,8 +19,11 @@ Dependencies
 
 Installing
 ----------
-Install through PyPI: ```pip install cyr```.
-Download  `.cyr_nets` and move them to your home directory (```mv .cyr_nets ~/```)
+Install through PyPI: 
+```
+pip install cyr
+```
+Download `.cyr_nets` and move them to your home directory (```mv .cyr_nets ~/```)
 
 
 
