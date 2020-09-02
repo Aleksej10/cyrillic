@@ -27,7 +27,7 @@ Download `.cyr_nets` and move them to your home directory (`mv .cyr_nets ~/`)
 Example use
 -----------
 If you know you're going to use it multiple times in a short period of time, it is best to use
-it as a daemon to avoid loading nets (which takes most of the time) every time you run it.
+it as a daemon to avoid loading nets (which takes most of the time) every time you run it.   
 Start daemon:
 ``` 
 cyr -D 
