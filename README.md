@@ -2,6 +2,8 @@ cyr
 ===
 cyr is a simple console program that converts text written in plain ASCII to UTF-8 cyrillic.
 
+![cyr short demo](https://github.com/Aleksej10/cyrillic/blob/master/doc/cyr_demo.gif)
+
 About
 -----
 * Authors:     see the `LICENSE`
