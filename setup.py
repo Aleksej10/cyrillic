@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cyr-10", 
-    version="0.0.9",
+    version="0.0.10",
     author="Aleksej",
     author_email="mr.strale@gmain.com",
     description="smart ascii to unicode cyrillic converter",

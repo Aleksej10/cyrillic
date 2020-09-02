@@ -1,22 +1,26 @@
-# synopsis
-    cyr [-d] [-D] [-f FILE] [-h] [-i] [-K] [-n PATH] [-o FILE]
-# description
-    converts plain ascii text to unicode cyrillic.
+cyr 
+===
 
-# options
-    -d 
-        use daemon instead of loading nets.
-    -D 
-        start daemon. 
-    -f FILE
-        specify file to read. reads from standard input by default.
-    -h 
-        display this help and exit.
-    -i
-        edit file in place.
-    -K 
-        kill daemon.
-    -n PATH
-        path to nets. default is $HOME/.cyr_nets.
-    -o FILE 
-        specify output file. writes to standard output by default.
+cyr is a simple console program that converts text written in plain ASCII to UTF-8 cyrillic.
+
+About
+-----
+* Authors:     see the `LICENSE`
+* License:     MIT License
+* Bug reports: https://github.com/Aleksej10/cyrillic/issues
+* git clone    https://github.com/Aleksej10/cyrillic
+
+Dependencies
+------------
+* python (>=3.6)
+* torch 
+* numpy
+* `nohup`
+
+Installing
+----------
+Install through PyPI: ```pip install cyr```.
+Download  `.cyr_nets` and move them to your home directory (```mv .cyr_nets ~/```)
+
+
+
